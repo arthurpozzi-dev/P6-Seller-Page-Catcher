@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>P6 Seller Page Catche</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-logo">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <div>
+          <h1>P6 Seller Page Catche</h1>
+          <span class="header-subtitle">Seller Central Brasil</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <label class="input-label" for="asinInput">Cole os ASINs (um por linha)</label>
+      <textarea
+        id="asinInput"
+        class="asin-textarea"
+        placeholder="B08N5WRWNW&#10;B09V3KXJPB&#10;B0BDJ279KF&#10;..."
+        rows="8"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="input-footer">
+        <span class="asin-count" id="asinCount">0 ASINs</span>
+        <button class="btn-clear" id="btnClear" title="Limpar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          Limpar
+        </button>
+      </div>
+
+      <button class="btn-primary" id="btnCheck">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        Verificar ASINs
+      </button>
+
+      <div class="feedback" id="feedback" style="display: none;"></div>
+    </main>
+
+    <footer class="footer">
+      <p>Cada ASIN abrirá uma aba de verificação no Seller Central</p>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
