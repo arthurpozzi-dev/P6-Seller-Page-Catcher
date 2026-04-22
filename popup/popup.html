@@ -18,9 +18,14 @@
           <span class="header-subtitle">Seller Central Brasil</span>
         </div>
       </div>
+      
+      <div class="tabs">
+        <button class="tab-btn active" data-target="tab-bulk">Verificador</button>
+        <button class="tab-btn" data-target="tab-sheet">Planilha</button>
+      </div>
     </header>
 
-    <main class="main">
+    <main class="main" id="tab-bulk">
       <label class="input-label" for="asinInput">Cole os ASINs (um por linha)</label>
       <textarea
         id="asinInput"
@@ -53,8 +58,36 @@
       <div class="feedback" id="feedback" style="display: none;"></div>
     </main>
 
+    <main class="main" id="tab-sheet" style="display: none;">
+      <div class="sheet-container">
+        <div class="sheet-header">
+          <span class="sheet-count" id="sheetCount">0 itens salvos</span>
+        </div>
+        <div class="sheet-list" id="sheetList">
+          <!-- Items injected via JS -->
+        </div>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn-primary" id="btnDownloadCsv">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Baixar CSV
+        </button>
+        <button class="btn-danger" id="btnClearSheet" title="Limpar tudo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Resetar
+        </button>
+      </div>
+    </main>
+
     <footer class="footer">
-      <p>Cada ASIN abrirá uma aba de verificação no Seller Central</p>
+      <p id="footerText">Cada ASIN abrirá uma aba de verificação no Seller Central</p>
     </footer>
   </div>
   <script src="popup.js"></script>

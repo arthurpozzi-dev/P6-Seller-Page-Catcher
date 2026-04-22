@@ -3,7 +3,7 @@
   "name": "P6 Seller Page Catche",
   "version": "3.1",
   "description": "Verificação rápida de ASINs e vitrines de sellers no Seller Central",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage", "downloads"],
   "background": {
     "service_worker": "background/service-worker.js"
   },
@@ -26,7 +26,8 @@
         "*://www.amazon.com.br/*",
         "*://www.amazon.com/*",
         "*://amazon.com.br/*",
-        "*://amazon.com/*"
+        "*://amazon.com/*",
+        "*://sellercentral.amazon.com.br/*"
       ],
       "js": ["content/content.js"],
       "css": ["content/content.css"],

@@ -197,3 +197,130 @@
   .p6-toolbar-btn { flex: 1; justify-content: center; }
   .p6-toolbar-brand, .p6-offers-brand { width: 100%; justify-content: center; }
 }
+
+/* ===== 5. SELLER CENTRAL: EXTRACTOR POPUP ===== */
+
+#p6-offer-extractor {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 999999;
+  width: 320px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1.5px solid #E45047;
+  border-radius: 12px;
+  color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  animation: p6-slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.p6-extractor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(228,80,71,0.2);
+  font-weight: 700;
+  font-size: 14px;
+  color: #e4e4e7;
+}
+
+.p6-extractor-header svg {
+  color: #E45047;
+}
+
+.p6-extractor-body {
+  padding: 16px;
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.p6-extractor-item {
+  margin-bottom: 8px;
+}
+
+.p6-extractor-item strong {
+  color: #d4d4d8;
+}
+
+.p6-extractor-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(228,80,71,0.2);
+}
+
+.p6-extractor-actions .p6-toolbar-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ===== 6. MINIMIZED STATE ===== */
+
+.p6-btn-minimize {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #a1a1aa);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.p6-btn-minimize:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.p6-extractor-header .p6-btn-minimize {
+  margin-left: auto;
+}
+
+.p6-toolbar-brand .p6-btn-minimize,
+.p6-offers-brand .p6-btn-minimize {
+  margin-left: 12px;
+}
+
+#p6-toolbar.p6-minimized .p6-toolbar-actions,
+#p6-offers-toolbar.p6-minimized .p6-offers-actions,
+#p6-offer-extractor.p6-minimized .p6-extractor-body,
+#p6-offer-extractor.p6-minimized .p6-extractor-actions {
+  display: none !important;
+}
+
+#p6-toolbar.p6-minimized .p6-toolbar-inner,
+#p6-offers-toolbar.p6-minimized .p6-offers-inner {
+  padding: 8px 16px;
+  width: max-content;
+  margin-left: 0;
+}
+
+#p6-toolbar.p6-minimized {
+  width: max-content;
+}
+
+.p6-minimized .p6-btn-minimize svg line {
+  display: none;
+}
+.p6-minimized .p6-btn-minimize svg {
+  transform: rotate(45deg); /* To simulate a plus sign? Let's just draw a plus */
+}
+.p6-minimized .p6-btn-minimize {
+  /* Change icon to '+' visually using CSS */
+  position: relative;
+}
+.p6-minimized .p6-btn-minimize::after {
+  content: "+";
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 300;
+  display: block;
+}

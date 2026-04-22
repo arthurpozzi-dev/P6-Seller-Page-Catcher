@@ -26,11 +26,24 @@ Ao abrir o popup lateral da Amazon que lista "Todas as Ofertas" (concorrentes da
 - **Copiar Vitrines:** Extrai o ID de todos os vendedores concorrentes e gera links formatados das vitrines.
 - **Abrir Todas:** Abre as vitrines de todos os concorrentes em novas abas para análise rápida.
 
-### 4. ⌨️ Entrada Manual e Bulk (Popup da Extensão)
-Clique no ícone da extensão para abrir o painel principal:
-- **Input de Área de Texto:** Cole uma lista de ASINs manualmente.
-- **Processamento Inteligente:** Limpa e formata os dados automaticamente.
-- **Ação:** Abre todas as abas de verificação de uma só vez.
+### 4. 📊 Extrator de Dados de Oferta (Seller Central)
+Ao carregar com sucesso a página de oferta no Seller Central:
+- Um painel lateral flutuante captura as métricas principais da BuyBox.
+- **Dados Capturados:** Nome, ASIN, Preço Vencedor, Valor de Frete e Quantidade de Anúncios.
+- O painel possui um identificador visual (cores de semáforo) para a quantidade de concorrência.
+- **Adicionar à Planilha:** Salva a ASIN no banco de dados local da extensão para análise posterior.
+- **Minimizar:** Todos os painéis injetados possuem um botão de minimizar/maximizar para não obstruir a visão da página.
+
+### 5. 🗂️ Gerenciador e Bulk Check (Popup da Extensão)
+Clique no ícone da extensão para abrir o centro de controle, agora dividido em abas:
+- **Aba Verificador (Bulk Check):**
+  - **Input de Área de Texto:** Cole uma lista de ASINs manualmente.
+  - **Ação:** Abre todas as abas de verificação de uma só vez no Seller Central.
+- **Aba Planilha (Gerenciamento):**
+  - **Visualização:** Lista todos os produtos salvos com seus detalhes capturados.
+  - **Excluir:** Remova itens individualmente através do ícone de lixeira.
+  - **Resetar:** Limpe toda a planilha local com um único clique.
+  - **Baixar CSV:** Exporte os dados consolidados para Excel/Google Sheets diretamente do popup.
 
 
 ## 🛠️ Como Instalar (Desenvolvedor)

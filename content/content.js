@@ -46,6 +46,11 @@
     return params.has('me');
   }
 
+  function isSellerCentralOfferPage() {
+    return window.location.hostname.includes('sellercentral.amazon.com.br') &&
+      window.location.pathname.includes('/offer/offer');
+  }
+
   // ===== 1. PÁGINA DE PRODUTO: BOTÃO FLUTUANTE =====
 
   function injectFloatingButton(asin) {
@@ -130,6 +135,9 @@
           </svg>
           <span class="p6-toolbar-title">P6 Catche</span>
           <span class="p6-toolbar-count" id="p6-count">0 ASINs</span>
+          <button id="p6-btn-min-storefront" class="p6-btn-minimize" title="Minimizar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
         </div>
         <div class="p6-toolbar-actions">
           <button class="p6-toolbar-btn p6-btn-copy" id="p6-copy-all" title="Copiar todas as ASINs">
@@ -153,6 +161,10 @@
 
     document.body.appendChild(toolbar);
     updateToolbarCount();
+
+    document.getElementById('p6-btn-min-storefront').addEventListener('click', () => {
+      toolbar.classList.toggle('p6-minimized');
+    });
 
     document.getElementById('p6-copy-all').addEventListener('click', () => {
       const asins = getAllProductAsins();
@@ -222,6 +234,9 @@
           </svg>
           <span class="p6-offers-title">P6 Catche</span>
           <span class="p6-offers-count">${sellerIds.length} seller${sellerIds.length !== 1 ? 's' : ''}</span>
+          <button id="p6-btn-min-offers" class="p6-btn-minimize" title="Minimizar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
         </div>
         <div class="p6-offers-actions">
           <button class="p6-toolbar-btn p6-btn-copy" id="p6-copy-sellers" title="Copiar links das vitrines">
@@ -246,6 +261,10 @@
     // Inserir antes do scroller
     scroller.parentElement.insertBefore(toolbar, scroller);
 
+    document.getElementById('p6-btn-min-offers').addEventListener('click', () => {
+      toolbar.classList.toggle('p6-minimized');
+    });
+
     document.getElementById('p6-copy-sellers').addEventListener('click', () => {
       const ids = extractSellerIds();
       const urls = ids.map(id => getStorefrontUrl(id)).join('\n\n');
@@ -262,6 +281,163 @@
         urls: ids.map(id => getStorefrontUrl(id))
       });
       flashButton('p6-open-sellers', `✅ ${ids.length} abas!`);
+    });
+  }
+
+  // ===== 5. SELLER CENTRAL: EXTRAÇÃO DE OFERTA =====
+
+  function extractOfferData() {
+    const titleEl = document.querySelector('div[data-testid="product-title"]');
+    const asinEl = document.querySelector('div[data-testid="asin"]');
+    // Pode demorar um pouco para aparecer a div de concorrentes, ou ela pode estar vazia no início
+    const summaryEl = document.querySelector('div[data-testid="condition-offer-summaries-0"]');
+
+    if (!titleEl || !asinEl) return null;
+
+    const title = titleEl.innerText || titleEl.textContent;
+    if (!title.trim()) return null; // Aguarda carregar o titulo
+
+    const asinMatch = (asinEl.innerText || asinEl.textContent).match(/ASIN:\s*([A-Z0-9]+)/i);
+    const asin = asinMatch ? asinMatch[1] : null;
+    if (!asin) return null;
+
+    let qtd = 0;
+    let price = "0,00";
+    let shipping = "0,00";
+
+    // Se houver a div de ofertas e ela tiver texto, tentamos extrair
+    if (summaryEl) {
+      const summaryText = (summaryEl.innerText || summaryEl.textContent).replace(/[\n\r]+/g, ' ').trim();
+
+      // Se a div existir mas estiver vazia (carregando), abortamos e esperamos o MutationObserver tentar novamente
+      if (summaryText.length === 0) return null;
+
+      // 1. Extrair quantidade (primeiro numero na string)
+      const qtdMatch = summaryText.match(/\b(\d+)\b/);
+      if (qtdMatch) qtd = parseInt(qtdMatch[1], 10);
+
+      // 2. Extrair valores (tudo que tiver depois de R$)
+      const prices = [];
+      const priceRegex = /R\$\s*([\d.,]+)/gi;
+      let match;
+      while ((match = priceRegex.exec(summaryText)) !== null) {
+        prices.push(match[1]);
+      }
+
+      if (prices.length > 0) price = prices[0];
+      if (prices.length > 1) shipping = prices[1];
+    }
+
+    const productLink = `https://amazon.com.br/dp/${asin}`;
+    const sellerLink = window.location.href;
+
+    return { title: title.trim(), asin, productLink, sellerLink, qtd, price, shipping };
+  }
+
+  function getQtdColor(qtd) {
+    if (qtd < 10) return '#4ade80'; // Verde
+    if (qtd <= 50) return '#facc15'; // Amarelo
+    return '#f87171'; // Vermelho
+  }
+
+  function injectOfferExtractionPopup() {
+    if (document.getElementById('p6-offer-extractor')) return;
+
+    const data = extractOfferData();
+    if (!data) return;
+
+    const popup = document.createElement('div');
+    popup.id = 'p6-offer-extractor';
+
+    const qtdColor = getQtdColor(data.qtd);
+
+    popup.innerHTML = `
+      <div class="p6-extractor-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>Planilha P6</span>
+        <button id="p6-btn-min-extractor" class="p6-btn-minimize" title="Minimizar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+      <div class="p6-extractor-body">
+        <div class="p6-extractor-item"><strong>ASIN:</strong> ${data.asin}</div>
+        <div class="p6-extractor-item"><strong>Preço:</strong> R$ ${data.price}</div>
+        <div class="p6-extractor-item"><strong>Frete:</strong> R$ ${data.shipping}</div>
+        <div class="p6-extractor-item">
+          <strong>Anúncios:</strong> 
+          <span style="color: ${qtdColor}; font-weight: bold; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; margin-left: 4px;">${data.qtd}</span>
+        </div>
+      </div>
+      <div class="p6-extractor-actions">
+        <button id="p6-btn-add-sheet" class="p6-toolbar-btn p6-btn-open">Adicionar</button>
+        <button id="p6-btn-dl-sheet" class="p6-toolbar-btn p6-btn-copy">Baixar CSV</button>
+      </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    document.getElementById('p6-btn-min-extractor').addEventListener('click', () => {
+      popup.classList.toggle('p6-minimized');
+    });
+
+    document.getElementById('p6-btn-add-sheet').addEventListener('click', () => {
+      chrome.storage.local.get({ p6_spreadsheet: [] }, (result) => {
+        const list = result.p6_spreadsheet;
+        if (!list.find(i => i.asin === data.asin && i.sellerLink === data.sellerLink)) {
+          list.push(data);
+          chrome.storage.local.set({ p6_spreadsheet: list }, () => {
+            flashButton('p6-btn-add-sheet', '✅ Salvo!');
+          });
+        } else {
+          flashButton('p6-btn-add-sheet', '⚠️ Já existe');
+        }
+      });
+    });
+
+    document.getElementById('p6-btn-dl-sheet').addEventListener('click', () => {
+      chrome.storage.local.get({ p6_spreadsheet: [] }, (result) => {
+        const list = result.p6_spreadsheet;
+        if (list.length === 0) {
+          flashButton('p6-btn-dl-sheet', 'Vazia!');
+          return;
+        }
+
+        const headers = ["Nome do Produto", "ASIN", "Link do Produto", "Link do Seller", "Quantidade de Anuncios", "Preco Vencedor", "Valor do frete vencedor"];
+
+        const escapeCSV = (str) => {
+          if (str === null || str === undefined) return '""';
+          const s = String(str).replace(/"/g, '""');
+          return `"${s}"`;
+        };
+
+        const rows = list.map(item => [
+          escapeCSV(item.title),
+          escapeCSV(item.asin),
+          escapeCSV(item.productLink),
+          escapeCSV(item.sellerLink),
+          escapeCSV(item.qtd),
+          escapeCSV(item.price),
+          escapeCSV(item.shipping)
+        ].join(','));
+
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers.join(',') + "\n" + rows.join('\n');
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `p6_produtos_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        flashButton('p6-btn-dl-sheet', '✅ Baixado!');
+      });
     });
   }
 
@@ -296,6 +472,11 @@
 
     // Popup "Todas as Ofertas": sellers
     checkForAllOffersPopup();
+
+    // Seller Central: Popup de extração
+    if (isSellerCentralOfferPage()) {
+      setTimeout(injectOfferExtractionPopup, 1000); // Aguardar renderização
+    }
   }
 
   function checkForAllOffersPopup() {
@@ -330,6 +511,11 @@
 
     // Detectar popup de "Todas as Ofertas" aparecendo
     checkForAllOffersPopup();
+
+    // Seller Central: extração
+    if (isSellerCentralOfferPage()) {
+      injectOfferExtractionPopup();
+    }
 
     // Atualizar vitrine quando novos produtos carregam
     if (isStorefrontPage()) {
